@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A small industrial vision demonstration for reviewing activity in a marked area.">
+  <meta name="theme-color" content="#111714">
+  <title>ZoneWatch | Industrial vision demo</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./vendor/tf.min.js"></script>
+  <script defer src="./vendor/coco-ssd.min.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>ZoneWatch</span><span class="brand-divider"></span><span class="brand-label">VISION DEMO</span></div>
+    <div class="header-note"><span class="header-dot"></span> PROCESSED IN YOUR BROWSER</div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div class="eyebrow"><span class="eyebrow-line"></span> INDUSTRIAL AI · PROOF OF CONCEPT</div>
+      <h1 id="page-title">Make the important<br><em>moments visible.</em></h1>
+      <p>Review when a person may have entered a marked area. A simple example of how edge vision could help a team focus its attention.</p>
+    </section>
+
+    <section class="workspace" aria-labelledby="workspace-title">
+      <div class="workspace-header">
+        <div>
+          <div class="section-kicker">01 / REVIEW FOOTAGE</div>
+          <h2 id="workspace-title">Area monitor</h2>
+        </div>
+        <div class="status-pill" id="status-pill" role="status" aria-live="polite"><span class="status-dot"></span><span id="status">Ready to start</span></div>
+      </div>
+
+      <div class="workspace-grid">
+        <div class="monitor-column">
+          <div class="scene" id="scene">
+            <video id="video" preload="auto" playsinline muted></video>
+            <canvas id="frame" aria-label="Video frame showing the monitored area. Draw a rectangle to change it."></canvas>
+            <div class="scene-top"><span class="scene-tag"><span class="scene-tag-dot"></span> <span id="source-label">SAMPLE FOOTAGE</span></span><span class="scene-time" id="frame-time">00:00</span></div>
+            <div class="scene-hint" id="scene-hint">Drag on the image to adjust the area</div>
+            <div class="scene-placeholder" id="scene-placeholder">Loading sample footage…</div>
+          </div>
+          <div class="scene-footer"><span><span class="key key-zone"></span> Monitored area</span><span><span class="key key-person"></span> Detected person</span><span class="scene-footnote" id="sample-note">Sample: Intel IoT DevKit</span></div>
+          <div class="control-row">
+            <button type="button" class="primary" id="run" disabled><span class="play-icon" aria-hidden="true">▶</span><span id="run-label">Analyze sample</span></button>
+          </div>
+          <div class="progress-wrap" id="progress-wrap" hidden><div class="progress-copy"><span id="progress-label">Preparing analysis…</span><span id="progress-value">0%</span></div><div class="progress-track" role="progressbar" id="progress" aria-label="Analysis progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-bar"></div></div></div>
+        </div>
+
+        <aside class="side-panel" aria-label="Analysis settings and results">
+          <div class="panel-heading"><span class="panel-icon" aria-hidden="true">⌗</span><div><div class="panel-title">Your focus area</div><div class="panel-subtitle">Decide what matters in the frame.</div></div></div>
+          <label class="field-label" for="zone-preset">MONITORING AREA</label>
+          <div class="select-wrap"><select id="zone-preset"><option value="default">Marked area</option><option value="all">Whole frame</option><option value="custom" disabled>Custom area</option></select><span aria-hidden="true">⌄</span></div>
+          <p class="field-help">Use the preset or drag a rectangle over the video. A detection is considered inside when its center is inside the area.</p>
+          <div class="panel-rule"></div>
+          <div class="result-heading"><div><div class="panel-title">Run summary</div><div class="panel-subtitle">Measured during this analysis.</div></div><span class="result-badge" id="result-badge">WAITING</span></div>
+          <div class="metrics">
+            <div class="metric"><span>Frames checked</span><strong id="frame-count">—</strong></div>
+            <div class="metric"><span>Possible entries</span><strong id="event-count">—</strong></div>
+            <div class="metric"><span>Avg. detection time</span><strong id="avg-time">—</strong></div>
+          </div>
+          <p class="metric-note">One frame per second, up to 30 seconds. Detection time is measured on this device; it is not an Axelera hardware benchmark.</p>
+        </aside>
+      </div>
+
+      <section class="events" aria-labelledby="events-title">
+        <div class="events-header"><div><div class="section-kicker">02 / HUMAN REVIEW</div><h2 id="events-title">Moments to review</h2></div><span class="event-total" id="event-total">No analysis yet</span></div>
+        <div id="empty" class="empty"><div class="empty-icon" aria-hidden="true">↗</div><div><strong>Start with the sample</strong><p>Possible entries will appear here with a timestamp. Select one to inspect it.</p></div></div>
+        <ol id="event-list" class="event-list"></ol>
+        <p class="event-note">An event marks a change from clear to occupied, not an individual person. A missed detection can split one visit into multiple events. Review choices last until the page is reloaded.</p>
+      </section>
+    </section>
+
+    <section class="context" aria-labelledby="context-title"><div class="context-copy"><div class="section-kicker">THE IDEA</div><h2 id="context-title">Less footage.<br><em>More useful context.</em></h2><p>Instead of asking a person to watch every second of a recording, this demonstration highlights a few moments for review. It runs in the browser using a general-purpose person detector.</p><p class="context-limit">A prototype for discussion, not a safety system. Accuracy and reliability have not been validated for industrial deployment. No Axelera hardware or SDK was used.</p></div><div class="context-steps"><div class="context-step"><span>01</span><div><strong>Choose an area</strong><p>Define where activity is worth a closer look.</p></div></div><div class="context-step"><span>02</span><div><strong>Analyze locally</strong><p>Sample the video and detect people on this device.</p></div></div><div class="context-step"><span>03</span><div><strong>Review the moments</strong><p>Inspect timestamps and mark the result yourself.</p></div></div></div></section>
+  </main>
+  <footer><div><strong>ZoneWatch</strong><span> An independent proof of concept prepared for Mohamad Amin Al Hajj.</span></div><div>Sample video: <a href="https://github.com/intel-iot-devkit/sample-videos">Intel IoT DevKit</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · trimmed and resized. Detector: <a href="https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd">TensorFlow.js COCO-SSD</a>.</div></footer>
+</body>
+</html>
